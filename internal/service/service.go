@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
+
+	//	"path/filepath"
 	"strings"
 	"time"
 
@@ -47,8 +48,10 @@ func (s *Service) ConvertString(input string) (string, error) {
 
 	fileName := timeStr + ".txt"
 
-	ext := filepath.Ext(fileName)
-	fmt.Printf("Создаем файл с расширением: %s\n", ext)
+	/*
+		ext := filepath.Ext(fileName)
+		fmt.Printf("Создаем файл с расширением: %s\n", ext)
+	*/
 
 	err := os.WriteFile(fileName, []byte(result), 0644)
 	if err != nil {
