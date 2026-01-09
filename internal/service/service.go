@@ -27,7 +27,7 @@ func (s *Service) ConvertString(input string) (string, error) {
 	var mrs bool
 
 	for _, char := range input {
-		if char != '.' && char != '-' {
+		if char != '.' && char != '-' && char != ' ' && char != '/' {
 			mrs = false
 			break
 		}
