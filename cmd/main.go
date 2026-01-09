@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	log := log.New(os.Stdout, "", 0)
+	log := log.New(os.Stdout, "SERVER: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	converter := morse.NewConverter(morse.DefaultMorse)
 	mainService := service.NewService(converter)
