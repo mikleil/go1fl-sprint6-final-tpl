@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 )
 
@@ -23,11 +25,45 @@ func New(logger *log.Logger, service service) *Handler {
 	}
 }
 
-func (h *Handler) HandleRoot(w http.ResponseWriter, r *http.Request) {
-	filepath := filepath.Join("../index.html")
-	http.ServeFile(w, r, filepath)
+func getProjectRoot() (string, error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	for {
+		if _, err := os.Stat(filepath.Join(cwd, "go.mod")); err == nil {
+			return cwd, nil
+		}
+
+		parent := filepath.Dir(cwd)
+		if parent == cwd {
+			break
+		}
+		cwd = parent
+	}
+
+	return "", fmt.Errorf("go.mod not found")
 }
 
+func (h *Handler) HandleRoot(w http.ResponseWriter, r *http.Request) {
+	rootDir, err := getProjectRoot()
+	if err != nil {
+		h.logger.Printf("Internal error: %v", err)
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	indexPath := filepath.Join(rootDir, "index.html")
+	http.ServeFile(w, r, indexPath)
+}
+
+/*
+	func (h *Handler) HandleRoot(w http.ResponseWriter, r *http.Request) {
+		filepath := filepath.Join("../index.html")
+		http.ServeFile(w, r, filepath)
+	}
+*/
 func (h *Handler) HandleUpload(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(100000000000); err != nil {
 		h.logger.Printf("Error parsing form: %v", err)
