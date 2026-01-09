@@ -14,8 +14,12 @@ func main() {
 	log := log.New(os.Stdout, "SERVER: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	converter := morse.NewConverter(morse.DefaultMorse)
+
 	mainService := service.NewService(converter)
+
 	mainHandler := handlers.New(log, mainService)
+
 	srv := server.New(log, "localhost", "8080", 10, 5, 15, mainHandler)
+
 	srv.Start()
 }
