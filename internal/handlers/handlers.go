@@ -1,12 +1,11 @@
 package handlers
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
+	"time"
 )
 
 type service interface {
@@ -25,37 +24,9 @@ func New(logger *log.Logger, service service) *Handler {
 	}
 }
 
-func getProjectRoot() (string, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	for {
-		if _, err := os.Stat(filepath.Join(cwd, "go.mod")); err == nil {
-			return cwd, nil
-		}
-
-		parent := filepath.Dir(cwd)
-		if parent == cwd {
-			break
-		}
-		cwd = parent
-	}
-
-	return "", fmt.Errorf("go.mod not found")
-}
-
 func (h *Handler) HandleRoot(w http.ResponseWriter, r *http.Request) {
-	rootDir, err := getProjectRoot()
-	if err != nil {
-		h.logger.Printf("Internal error: %v", err)
-		http.Error(w, "Internal error", http.StatusInternalServerError)
-		return
-	}
-
-	indexPath := filepath.Join(rootDir, "index.html")
-	http.ServeFile(w, r, indexPath)
+	r.Header.Add("Content-Type", "text/html")
+	http.ServeFile(w, r, "./index.html")
 }
 
 /*
@@ -74,14 +45,14 @@ func (h *Handler) HandleUpload(w http.ResponseWriter, r *http.Request) {
 	file, _, err := r.FormFile("myFile")
 	if err != nil {
 		h.logger.Printf("Error returning file: %v", err)
-		http.Error(w, "Error returning file", http.StatusInternalServerError)
+		http.Error(w, "Error returning file", http.StatusBadRequest)
 		return
 	}
 
 	input, err := io.ReadAll(file)
 	if err != nil {
 		h.logger.Printf("Error reading file: %v", err)
-		http.Error(w, "Error reading file", http.StatusInternalServerError)
+		http.Error(w, "Error reading file", http.StatusBadRequest)
 		return
 	}
 
@@ -96,4 +67,8 @@ func (h *Handler) HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Write([]byte(result))
+}
+
+func ReadToFile(text string) {
+	os.WriteFile(time.Now().String()+".txt", []byte(text), 0644)
 }

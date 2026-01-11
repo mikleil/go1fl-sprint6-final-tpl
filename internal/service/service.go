@@ -1,9 +1,7 @@
 package service
 
 import (
-	"os"
-	"time"
-
+	"go1fl-sprint6-final-tpl/internal/handlers"
 	"go1fl-sprint6-final-tpl/pkg/morse"
 )
 
@@ -30,15 +28,11 @@ func (s *Service) ConvertString(input string) (string, error) {
 
 	if mrs {
 		text := morse.ToText(input)
-
-		os.WriteFile(time.Now().String()+".txt", []byte(text), 0644)
-
+		handlers.ReadToFile(text)
 		return text, nil
 	} else {
 		morse := morse.ToMorse(input)
-
-		os.WriteFile(time.Now().String()+".txt", []byte(morse), 0644)
-
+		handlers.ReadToFile(morse)
 		return morse, nil
 	}
 }
