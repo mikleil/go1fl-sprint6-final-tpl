@@ -28,11 +28,11 @@ func (s *Service) ConvertString(input string) (string, error) {
 
 	if mrs {
 		text := morse.ToText(input)
-		handlers.ReadToFile(text)
+		handlers.WriteToFile(text)
 		return text, nil
 	} else {
 		morse := morse.ToMorse(input)
-		handlers.ReadToFile(morse)
+		handlers.WriteToFile(morse)
 		return morse, nil
 	}
 }

@@ -69,6 +69,6 @@ func (h *Handler) HandleUpload(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(result))
 }
 
-func ReadToFile(text string) {
-	os.WriteFile(time.Now().String()+".txt", []byte(text), 0644)
+func WriteToFile(str string) {
+	os.WriteFile(time.Now().String()+".txt", []byte(str), 0644)
 }
